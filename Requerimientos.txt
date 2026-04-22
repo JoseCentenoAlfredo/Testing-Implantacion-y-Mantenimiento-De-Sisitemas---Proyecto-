@@ -3,9 +3,9 @@ Se requiere una computadora o laptop con procesador de doble núcleo o superior,
 10 GB de espacio libre en disco, monitor, teclado y mouse. De manera opcional, puede emplearse una impresora para la emisión de reportes del inventario.
 
 Requisitos de software:
-Se requiere un sistema operativo compatible, como Windows 10 o superior, el entorno de ejecución del lenguaje de programación seleccionado,
-un gestor de base de datos local como MySQL, PostgreSQL o SQLite, y un entorno de desarrollo integrado como IntelliJ IDEA, NetBeans,
-Eclipse o Visual Studio Code. Asimismo, el sistema deberá contar con una interfaz que permita realizar las operaciones básicas del módulo de inventario.
+Se requiere un sistema operativo compatible, como Windows 10 o superior, un entorno para ejecutar el lenguaje de programación python,
+un gestor de base de datos local como MySQL, y un entorno de desarrollo integrado como IntelliJ IDEA, NetBeans,
+Eclipse o Visual Studio Code.
 
 Requisitos funcionales: 
 El sistema deberá permitir la gestión completa del inventario mediante operaciones de registro, consulta, búsqueda, actualización y eliminación de productos y categorías. 
