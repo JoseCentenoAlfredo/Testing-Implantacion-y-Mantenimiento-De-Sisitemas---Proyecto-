@@ -4,8 +4,7 @@ Se requiere una computadora o laptop con procesador de doble núcleo o superior,
 
 Requisitos de software:
 Se requiere un sistema operativo compatible, como Windows 10 o superior, un entorno para ejecutar el lenguaje de programación python,
-un gestor de base de datos local como MySQL, y un entorno de desarrollo integrado como IntelliJ IDEA, NetBeans,
-Eclipse o Visual Studio Code.
+un gestor de base de datos local como MySQL, y un entorno de desarrollo integrado como IntelliJ IDEA, NetBeans, Eclipse o Visual Studio Code.
 
 Requisitos funcionales: 
 El sistema deberá permitir la gestión completa del inventario mediante operaciones de registro, consulta, búsqueda, actualización y eliminación de productos y categorías. 
