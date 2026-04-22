@@ -1,11 +1,16 @@
 Requisitos de hardware:
-Se requiere una computadora o laptop con procesador de doble núcleo o superior, 4 GB de memoria RAM como mínimo, 10 GB de espacio libre en disco, monitor, teclado y mouse. De manera opcional, puede emplearse una impresora para la emisión de reportes del inventario.
+Se requiere una computadora o laptop con procesador de doble núcleo o superior, 4 GB de memoria RAM como mínimo,
+10 GB de espacio libre en disco, monitor, teclado y mouse. De manera opcional, puede emplearse una impresora para la emisión de reportes del inventario.
 
 Requisitos de software:
-Se requiere un sistema operativo compatible, como Windows 10 o superior, el entorno de ejecución del lenguaje de programación seleccionado, un gestor de base de datos local como MySQL, PostgreSQL o SQLite, y un entorno de desarrollo integrado como IntelliJ IDEA, NetBeans, Eclipse o Visual Studio Code. Asimismo, el sistema deberá contar con una interfaz que permita realizar las operaciones básicas del módulo de inventario.
+Se requiere un sistema operativo compatible, como Windows 10 o superior, el entorno de ejecución del lenguaje de programación seleccionado,
+un gestor de base de datos local como MySQL, PostgreSQL o SQLite, y un entorno de desarrollo integrado como IntelliJ IDEA, NetBeans,
+Eclipse o Visual Studio Code. Asimismo, el sistema deberá contar con una interfaz que permita realizar las operaciones básicas del módulo de inventario.
 
 Requisitos funcionales: 
-El sistema deberá permitir la gestión completa del inventario mediante operaciones de registro, consulta, búsqueda, actualización y eliminación de productos y categorías. Asimismo, deberá controlar el stock disponible, registrar entradas y salidas, validar existencias, mostrar movimientos de inventario, generar reportes básicos y gestionar el acceso de usuarios.
+El sistema deberá permitir la gestión completa del inventario mediante operaciones de registro, consulta, búsqueda, actualización y eliminación de productos y categorías. 
+Asimismo, deberá controlar el stock disponible, registrar entradas y salidas, validar existencias, mostrar movimientos de inventario, generar reportes básicos y gestionar el acceso de usuarios.
 
 Requisitos no funcionales: 
-El sistema deberá ser usable, seguro, confiable, mantenible y portable. Además, deberá funcionar en entorno local sin conexión a Internet, ofrecer tiempos de respuesta adecuados, preservar la integridad de los datos y permitir una futura ampliación o migración tecnológica.
+El sistema deberá ser usable, seguro, confiable, mantenible y portable. Además, deberá funcionar en entorno local sin conexión a Internet,
+ofrecer tiempos de respuesta adecuados, preservar la integridad de los datos y permitir una futura ampliación o migración tecnológica.
