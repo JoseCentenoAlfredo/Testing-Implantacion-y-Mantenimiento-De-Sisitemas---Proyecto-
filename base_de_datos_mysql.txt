@@ -1,0 +1,152 @@
+DROP DATABASE IF EXISTS db_inventario;
+CREATE DATABASE db_inventario
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+USE db_inventario;
+
+-- =========================
+-- TABLA: usuarios
+-- =========================
+CREATE TABLE usuarios (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    clave VARCHAR(255) NOT NULL,
+    rol ENUM('ADMIN', 'ALMACENERO') NOT NULL DEFAULT 'ALMACENERO',
+    estado TINYINT(1) NOT NULL DEFAULT 1,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- =========================
+-- TABLA: categorias
+-- =========================
+CREATE TABLE categorias (
+    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion VARCHAR(255),
+    estado TINYINT(1) NOT NULL DEFAULT 1,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- =========================
+-- TABLA: productos
+-- =========================
+CREATE TABLE productos (
+    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    codigo VARCHAR(30) NOT NULL UNIQUE,
+    nombre VARCHAR(150) NOT NULL,
+    descripcion VARCHAR(255),
+    id_categoria INT NOT NULL,
+    unidad_medida VARCHAR(30) NOT NULL DEFAULT 'unidad',
+    precio_compra DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    precio_venta DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    stock_actual INT NOT NULL DEFAULT 0,
+    stock_minimo INT NOT NULL DEFAULT 0,
+    estado TINYINT(1) NOT NULL DEFAULT 1,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_productos_categoria
+        FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria)
+) ENGINE=InnoDB;
+
+CREATE INDEX idx_productos_nombre ON productos(nombre);
+CREATE INDEX idx_productos_categoria ON productos(id_categoria);
+
+-- =========================
+-- TABLA: movimientos_inventario
+-- =========================
+CREATE TABLE movimientos_inventario (
+    id_movimiento INT AUTO_INCREMENT PRIMARY KEY,
+    id_producto INT NOT NULL,
+    id_usuario INT NOT NULL,
+    tipo_movimiento ENUM('ENTRADA', 'SALIDA', 'AJUSTE_ENTRADA', 'AJUSTE_SALIDA') NOT NULL,
+    cantidad INT NOT NULL,
+    stock_anterior INT NOT NULL,
+    stock_posterior INT NOT NULL,
+    motivo VARCHAR(150),
+    referencia VARCHAR(100),
+    fecha_movimiento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_movimientos_producto
+        FOREIGN KEY (id_producto) REFERENCES productos(id_producto),
+    CONSTRAINT fk_movimientos_usuario
+        FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+) ENGINE=InnoDB;
+
+CREATE INDEX idx_movimientos_producto ON movimientos_inventario(id_producto);
+CREATE INDEX idx_movimientos_fecha ON movimientos_inventario(fecha_movimiento);
+
+-- =========================
+-- DATOS INICIALES
+-- =========================
+INSERT INTO usuarios (nombres, apellidos, username, clave, rol)
+VALUES
+('Administrador', 'General', 'admin', 'admin123', 'ADMIN');
+
+INSERT INTO categorias (nombre, descripcion)
+VALUES
+('Bebidas', 'Productos líquidos para consumo'),
+('Abarrotes', 'Productos de consumo general'),
+('Limpieza', 'Productos de aseo y limpieza');
+
+INSERT INTO productos (codigo, nombre, descripcion, id_categoria, unidad_medida, precio_compra, precio_venta, stock_actual, stock_minimo)
+VALUES
+('P001', 'Arroz Costeño 5kg', 'Bolsa de arroz de 5kg', 2, 'bolsa', 18.50, 22.00, 30, 5),
+('P002', 'Aceite Vegetal 1L', 'Botella de aceite de 1 litro', 2, 'botella', 7.80, 9.50, 20, 5),
+('P003', 'Lejía 1L', 'Botella de lejía de 1 litro', 3, 'botella', 2.80, 4.00, 15, 3);
+
+-- =========================
+-- TRIGGER 1:
+-- Calcula stock_anterior y stock_posterior
+-- Valida que no haya salida con stock insuficiente
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER trg_before_insert_movimiento
+BEFORE INSERT ON movimientos_inventario
+FOR EACH ROW
+BEGIN
+    DECLARE v_stock_actual INT;
+
+    SELECT stock_actual
+    INTO v_stock_actual
+    FROM productos
+    WHERE id_producto = NEW.id_producto;
+
+    IF v_stock_actual IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El producto no existe.';
+    END IF;
+
+    SET NEW.stock_anterior = v_stock_actual;
+
+    IF NEW.tipo_movimiento IN ('ENTRADA', 'AJUSTE_ENTRADA') THEN
+        SET NEW.stock_posterior = v_stock_actual + NEW.cantidad;
+    ELSEIF NEW.tipo_movimiento IN ('SALIDA', 'AJUSTE_SALIDA') THEN
+        IF NEW.cantidad > v_stock_actual THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Stock insuficiente para realizar la salida.';
+        END IF;
+        SET NEW.stock_posterior = v_stock_actual - NEW.cantidad;
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- =========================
+-- TRIGGER 2:
+-- Actualiza el stock del producto luego del movimiento
+-- =========================
+DELIMITER $$
+
+CREATE TRIGGER trg_after_insert_movimiento
+AFTER INSERT ON movimientos_inventario
+FOR EACH ROW
+BEGIN
+    UPDATE productos
+    SET stock_actual = NEW.stock_posterior
+    WHERE id_producto = NEW.id_producto;
+END$$
+
+DELIMITER ;
